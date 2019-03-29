@@ -1,58 +1,27 @@
-#library(e1071)
-
-#install.packages("dummy)
-
 library(caret)
-
 library(dummy)
-
-#Modelo de Regresión logística
-
+#Modelo de Regresi�n log�stica
 porcentaje<-0.7
-
-prueba <- perros5[,3:15]
-
-prueba[14] <- perros5[24]
-
-datos<-prueba
-
+datos<- perros5
 set.seed(123)
-
-
-datos$y<- datos$AdoptionSpeed
-
-#datos<-cbind(datos,dummy(datos,verbose = T))
-
-
-
+datos<-cbind(datos,dummy(datos,verbose = T))
 corte <- sample(nrow(datos),nrow(datos)*porcentaje)
-
 train<-datos[corte,]
-
 test<-datos[-corte,]
-
-
-
-modelo<-glm(4~, data = train[,c(1:15,8)],family = binomial(), maxit=100)
-modelo<-glm(AdoptionSpeed_4~., data = train[,c(1:5,8)],family = binomial(), maxit=100)
-
-
-
+#Queremos saber si una planta es virginica o no
+#modelo<-glm(Species_virginica~., data = train[,c(1:4,8)],family = binomial(), maxit=100)
+modelo<- glm(Name ~.,family=binomial(link='logit'),data=train)
 #-------------------------------------------------
-
-# Regresión Logistica 
-
+# Regresi�n Logistica 
 #-------------------------------------------------
-
-
 
 ##Modelo con todas las variables
-
 pred<-predict(modelo,newdata = test[,1:4], type = "response")
-
 prediccion<-ifelse(pred>=0.5,1,0)
+confusionMatrix(as.factor(test$Species_virginica),as.factor(prediccion))
 
-confusionMatrix(as.factor(test$AdoptionSpeed),as.factor(prediccion))
+
+
 #tutorial http://www.postdata-statistics.com/IntroEstadistica/Tutoriales/Tutorial-13.pdf
 #prueba 2
 colX = 1
@@ -122,7 +91,7 @@ curvaLogisticaMinCuad = function(x){
   b1 = Oddslm$coefficients[2] 
   return(exp(b0 + b1 * x)/(1 + exp(b0 + b1 * x))) 
 }
-
-
 points(marcasClase, probabilidades, col="red", pch=2, lwd=2) 
 curve(curvaLogisticaMinCuad, from = -10, to = 10, col="blue", lwd="2", add=TRUE, lty="dotted")
+
+
