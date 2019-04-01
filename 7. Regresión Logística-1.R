@@ -1,16 +1,35 @@
 library(caret)
 library(dummy)
+library(dplyr)
 #Modelo de Regresi�n log�stica
 porcentaje<-0.7
+perros5 <- read.csv("train.csv")
+
 datos<- perros5
 set.seed(123)
+
+
+
+#prueba <- perros5[,3:15]
+
+#prueba[14] <- perros5[24]
+
+
+#datos<-prueba
+datos <- slice(datos, 1:(n()-7497))
+
+
 datos<-cbind(datos,dummy(datos,verbose = T))
+
+
+gc()
 corte <- sample(nrow(datos),nrow(datos)*porcentaje)
 train<-datos[corte,]
 test<-datos[-corte,]
 #Queremos saber si una planta es virginica o no
 #modelo<-glm(Species_virginica~., data = train[,c(1:4,8)],family = binomial(), maxit=100)
-modelo<- glm(Name ~.,family=binomial(link='logit'),data=train)
+#modelo<- glm(AdoptionSpeed ~.,family=binomial(link='logit'),data=train)
+modelo<-glm(AdoptionSpeed~., data = train,family = binomial(), maxit=100)
 #-------------------------------------------------
 # Regresi�n Logistica 
 #-------------------------------------------------
@@ -93,5 +112,3 @@ curvaLogisticaMinCuad = function(x){
 }
 points(marcasClase, probabilidades, col="red", pch=2, lwd=2) 
 curve(curvaLogisticaMinCuad, from = -10, to = 10, col="blue", lwd="2", add=TRUE, lty="dotted")
-
-
